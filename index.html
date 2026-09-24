@@ -1,0 +1,16 @@
+<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PaintQR scan relay</title>
+<style>body{font-family:system-ui,sans-serif;margin:32px;color:#101828;text-align:center}</style>
+<p id="m">Connecting…</p>
+<script>
+// Fixed address in front of a rotating tunnel: forward the same path to the current tunnel host.
+// host.txt is updated by the tunnel supervisor whenever the tunnel address changes.
+(async()=>{
+  const path=location.pathname.replace(/^\/scan-relay/,'')+location.search+location.hash;
+  try{
+    const r=await fetch('/scan-relay/host.txt?'+Date.now(),{cache:'no-store'});
+    const host=(await r.text()).trim();
+    if(!host) throw new Error('no host');
+    location.replace(host+path);
+  }catch(e){ document.getElementById('m').textContent='Relay has no current tunnel address. Try again in a minute.'; }
+})();
+</script>
